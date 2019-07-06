@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="geco-web" version="4.0" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd">
+  <!-- =================================================================================== -->
+  <!-- =================================== PROJECT INFO ================================== -->
+  <!-- =================================================================================== -->
+  <display-name>Geco Gestion</display-name>
+  <description>Sistema gestion</description>
+  <!-- =================================================================================== -->
+  <!-- ================================== CONTEXT PARAMS ================================= -->
+  <!-- =================================================================================== -->
+  <context-param>
+    <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
+    <param-value>gecoGestion</param-value>
+  </context-param>
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>classpath:context/applicationContext.xml classpath:context/dataAccessContext.xml classpath:context/mqContext.xml</param-value>
+  </context-param>
+  <context-param>
+    <param-name>webAppRootKey</param-name>
+    <param-value>gecoGestion.root</param-value>
+  </context-param>
+  <!-- =================================================================================== -->
+  <!-- ====================================== FILTERS ==================================== -->
+  <!-- =================================================================================== -->
+  <filter>
+    <filter-name>LoginFilter</filter-name>
+    <filter-class>cr.go.ice.ldap.auth.LoginFilter</filter-class>
+    <init-param>
+      <param-name>RESOURCE_BUNDLE</param-name>
+      <param-value>cr.go.ice.ldap.auth.iceLdap</param-value>
+    </init-param>
+    <async-supported>true</async-supported>
+  </filter>
+  <filter>
+    <filter-name>sitemesh</filter-name>
+    <filter-class>com.opensymphony.module.sitemesh.filter.PageFilter</filter-class>
+    <async-supported>true</async-supported>
+  </filter>
+  <filter>
+    <filter-name>encodingFilter</filter-name>
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <init-param>
+      <param-name>encoding</param-name>
+      <param-value>UTF-8</param-value>
+    </init-param>
+    <init-param>
+      <param-name>forceEncoding</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <async-supported>true</async-supported>
+  </filter>
+  <filter>
+    <filter-name>SpringOpenEntityManagerInViewFilter</filter-name>
+    <filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter</filter-class>
+    <init-param>
+      <param-name>entityManagerFactoryBeanName</param-name>
+      <param-value>entityManagerFactoryGecoGestion</param-value>
+    </init-param>
+    <async-supported>true</async-supported>
+  </filter>
+  <filter-mapping>
+    <filter-name>SpringOpenEntityManagerInViewFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>LoginFilter</filter-name>
+    <url-pattern>/j_security_check</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>sitemesh</filter-name>
+    <url-pattern>*.do</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>sitemesh</filter-name>
+    <url-pattern>*.jsp</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>encodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <!-- =================================================================================== -->
+  <!-- ===================================== LISTENERS =================================== -->
+  <!-- =================================================================================== -->
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+  <listener>
+    <listener-class>cr.go.ice.geco.gestion.web.interceptor.PreAuthenticationRequestListener</listener-class>
+  </listener>
+  <!-- =================================================================================== -->
+  <!-- ====================================== SERVLETS =================================== -->
+  <!-- =================================================================================== -->
+  <servlet>
+    <servlet-name>gecoGestion</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <init-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>classpath:context/gecoGestion-servlet.xml</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+    <async-supported>true</async-supported>
+  </servlet>
+  <servlet>
+    <servlet-name>jaxws-servlet</servlet-name>
+    <servlet-class>com.sun.xml.ws.transport.http.servlet.WSSpringServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
+    <async-supported>true</async-supported>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>gecoGestion</servlet-name>
+    <url-pattern>*.do</url-pattern>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>jaxws-servlet</servlet-name>
+    <url-pattern>/aut/*</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>gecoGestion-ws</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <init-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>classpath:context/gecoGestion-ws-servlet.xml</param-value>
+    </init-param>
+    <async-supported>true</async-supported>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>gecoGestion-ws</servlet-name>
+    <url-pattern>/ws/*</url-pattern>
+  </servlet-mapping>
+  <!-- =================================================================================== -->
+  <!-- ============================= TIEMPO SESSION (MINUTOS) ============================ -->
+  <!-- =================================================================================== -->
+  <session-config>
+    <session-timeout>10</session-timeout>
+  </session-config>
+  <!-- =================================================================================== -->
+  <!-- ================================= WELCOME FILE LIST =============================== -->
+  <!-- =================================================================================== -->
+  <welcome-file-list>
+    <welcome-file>Index.jsp</welcome-file>
+  </welcome-file-list>
+  <!-- =================================================================================== -->
+  <!-- ======================= RECURSO EXTERNO Base de Datos ============================= -->
+  <!-- =================================================================================== -->
+  <resource-ref>
+    <description>DataSource</description>
+    <res-ref-name>jdbc/admincuds</res-ref-name>
+    <res-type>javax.sql.DataSource</res-type>
+    <res-auth>Container</res-auth>
+    <res-sharing-scope>Shareable</res-sharing-scope>
+  </resource-ref>
+  <!-- =================================================================================== -->
+  <!-- ==================================== ERROR PAGES ================================== -->
+  <!-- =================================================================================== -->
+  <error-page>
+    <error-code>403</error-code>
+    <location>/ErrorRole.jsp</location>
+  </error-page>
+  <!-- =================================================================================== -->
+  <!-- ===================================== CONSTRAINTS ================================== -->
+  <!-- =================================================================================== -->
+  <!-- =================================================================================== -->
+  <!-- ============================ CONFIGURACION LOGIN Y ROLES ========================== -->
+  <!-- =================================================================================== -->
+  <!-- =================================================================================== -->
+  <!-- ================================ VARIABLE DE ENTORNO ============================== -->
+  <!-- =================================================================================== -->
+  <!-- ===== Web Services - WSDL  ===== -->
+  <!-- =========================================================================== -->
+  <!-- ====================== VARIABLE DE ENTORNO PARA EL FTP ==================== -->
+  <!-- =========================================================================== -->
+  <!-- =========================================================================== -->
+  <!-- ====================== VARIABLE DE ENTORNO TIPO DE AMBIENTE P:PRODUCCION, Q=Calidad, D=Desarrollo ==================== -->
+  <!-- =========================================================================== -->
+  <!-- ===== Versiones de las plantillas de la ICEClave ===== -->
+  <env-entry>
+    <description>Tiempo de conexion de los ws</description>
+    <env-entry-name>ws.tiempoConexion</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>10000</env-entry-value>
+  </env-entry>
+  <env-entry>
+    <description>Tiempo de espera de los ws</description>
+    <env-entry-name>ws.tiempoEspera</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>35000</env-entry-value>
+  </env-entry>
+  <env-entry>
+    <description>URL para la consulta de un activo</description>
+    <env-entry-name>wsdl.query.consulta.activo</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>http://wbsfqa.ice.go.cr/telco/bss/channel/sca/ConsultaActivoXTelefonoSoap/wsdl/AgenciaVirtual/AccessServices-Siebel_ConsultaActivoXTelefonoExport1.wsdl</env-entry-value>
+  </env-entry>
+  <env-entry>
+    <description>URL para la consulta de la multa transferida por cambio de plan</description>
+    <env-entry-name>wsdl.query.consulta.multa.transferida.cambio.plan</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>http://aiainfra.intranet.ice:7777/soa-infra/services/Utilitarios/QueryPenaltysATVABCSImpl/client?WSDL</env-entry-value>
+  </env-entry>
+  <env-entry>
+    <description>Frase de encriptado para datos adicionales de plan CRM con el MOP</description>
+    <env-entry-name>frase.encriptado.datos.plan.crm.info.adicional.mop</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>DATOSPLANCRMINFOADICIONALMOP</env-entry-value>
+  </env-entry>
+  <env-entry>
+    <description>URL para obtener los datos adicionales de un plan CRM en MOP</description>
+    <env-entry-name>url.datos.plan.crm.info.adicional.mop</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>http://cert.ice.go.cr/MOPWeb/ws/datosPlanCRMInfoAdicional/</env-entry-value>
+  </env-entry>
+  <env-entry>
+    <description>Host del FTP para el envio de los contratos</description>
+    <env-entry-name>ftp.contratos.server.host</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>10.3.2.62</env-entry-value>
+  </env-entry>
+  <env-entry>
+    <description>Puerto del FTP para el envio de los contratos</description>
+    <env-entry-name>ftp.contratos.server.port</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>21</env-entry-value>
+  </env-entry>
+  <env-entry>
+    <description>Usuario del FTP para el envio de los contratos</description>
+    <env-entry-name>ftp.contratos.server.user</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>AdminCU</env-entry-value>
+  </env-entry>
+  <env-entry>
+    <description>Password del FTP para el envio de los contratos</description>
+    <env-entry-name>ftp.contratos.server.password</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>5lsjkDNKGie</env-entry-value>
+  </env-entry>
+  <env-entry>
+    <description>Carpeta dentro FTP para el envio de los contratos</description>
+    <env-entry-name>ftp.contratos.server.workdir</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>/GECO/</env-entry-value>
+  </env-entry>
+  <env-entry>
+    <description>URL de la aplicacion</description>
+    <env-entry-name>urlAplicacionGeco</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>https://cert.ice.go.cr/GECOGestionWeb/</env-entry-value>
+  </env-entry>
+  <env-entry>
+    <description>Correos notificacion solicitud reporte PYME</description>
+    <env-entry-name>correosSolicitudReportePyme</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>sicom@ice.go.cr</env-entry-value>
+  </env-entry>
+  <env-entry>
+    <description>Tipo de ambiente donde se ejecuta la aplicacion</description>
+    <env-entry-name>ambiente.tipo</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>Q</env-entry-value>
+  </env-entry>
+  <env-entry>
+    <description>Version plantilla Boleta ICEClave</description>
+    <env-entry-name>version.plantilla.boleta.ice.clave</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>2</env-entry-value>
+  </env-entry>
+  <env-entry>
+    <description>Version plantilla Reimpresion Boleta ICEClave</description>
+    <env-entry-name>version.plantilla.reimpresion.boleta.ice.clave</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>2</env-entry-value>
+  </env-entry>
+</web-app>
